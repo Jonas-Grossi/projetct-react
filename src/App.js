@@ -1,36 +1,26 @@
 
- import './App.css';
+import './App.css';
 import {Component} from 'react';
-import { PostCard } from './components/PostCard';
-//componente de classe retornando um jsx
+import {loadPosts} from './utils/load-posts'
+import { Posts } from './components/Posts';
+
 class App extends Component {
-  //todo constructor tem a propriedade props com isso posso usar state
+  
   
       state={
-        
         posts:[]          
             }
     
         
     
           
-    componentDidMount(){
-        this.loadPosts()
+   async componentDidMount(){
+        await this.loadPosts()
       }
   loadPosts=async ()=>{
-
-   const postsResponse = fetch('https://jsonplaceholder.typicode.com/posts')
-   const photosResponse = fetch('https://jsonplaceholder.typicode.com/photos') 
+    const postsAndPhotos = await loadPosts()
+    this.setState({posts: postsAndPhotos})
    
-   const[posts,photos]= await Promise.all([postsResponse,photosResponse])
-    const postsJson=await posts.json()
-    const photosJson=await photos.json()
-    const postsAndPhotos = postsJson.map((post,index)=>{
-      return{...post,cover:photosJson[index].url}
-    })
-    this.setState({posts:postsAndPhotos})
-
-
   }
   
   
@@ -39,26 +29,14 @@ class App extends Component {
     
     return ( 
     <section className="container">
-      <div className="posts">
       
-      {posts.map(post=>(
-        <PostCard
-        key={post.id}
-        title={post.title}
-        body={post.body}
-        id={post.id}
-          cover={post.cover}
-        
-        />
-      ))}
-  </div>
-
+      <Posts posts={posts}/>
 
     </section>
   
   
   )
-  
-}}
+  }
+}
 
 export default App;
